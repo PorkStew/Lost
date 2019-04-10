@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/dark"
     tools:context=".LoginFragment">
 
     <TextView
@@ -11,10 +12,13 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginStart="162dp"
-        android:layout_marginTop="78dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="183dp"
         android:text="WELCOME"
+        android:textColor="#ffff"
+        android:textSize="45dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.429"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,12 +27,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="99dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="150dp"
         android:layout_marginEnd="99dp"
-        android:layout_marginBottom="42dp"
         android:ems="10"
         android:hint="User Name"
         android:inputType="textPersonName"
+        android:textColorHint="#ffff"
         app:layout_constraintBottom_toTopOf="@+id/PasswordB"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,11 +43,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="99dp"
-        android:layout_marginTop="42dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="99dp"
+        android:layout_marginBottom="50dp"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
+        android:textColorHint="#ffff"
         app:layout_constraintBottom_toTopOf="@+id/LoginB"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,16 +57,31 @@
 
     <Button
         android:id="@+id/LoginB"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="162dp"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="162dp"
+        android:background="@drawable/loginb"
+        android:text="Login"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/PasswordB" />
+
+    <Button
+        android:id="@+id/RegisterB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="162dp"
-        android:layout_marginTop="238dp"
-        android:layout_marginEnd="162dp"
-        android:layout_marginBottom="160dp"
-        android:text="Login"
+        android:layout_marginTop="34dp"
+        android:layout_marginEnd="161dp"
+        android:layout_marginBottom="67dp"
+        android:text="REGISTER"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PasswordB" />
+        app:layout_constraintTop_toBottomOf="@+id/LoginB" />
 
 </android.support.constraint.ConstraintLayout>
