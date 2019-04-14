@@ -1,7 +1,19 @@
 <resources>
     <string name="app_name">Lost</string>
-
+    <string name="access_token">pk.eyJ1IjoicG9ya3N0ZXciLCJhIjoiY2p1ZWZyM3l2MDJ1cjN5cWoxY2NyNXc3byJ9.Kin5udqmCSwiuoZGRctCpg</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="select_fuel_type_bellow">Select Fuel Type Bellow</string>
+    <string name="password">Password</string>
+    <string name="submit">SUBMIT</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="first_name">First Name</string>
+    <string name="select_transport_type_bellow">Select Transport Type Bellow</string>
+    <string name="username">Username</string>
+    <string name="email_address">Email Address</string>
+    <string name="surname">Surname</string>
+    <string name="confirm_password">Confirm Password</string>
     <color name="black">#000000</color>
+    <string name="navigation_drawer_open">Open Navigation drawer</string>
+    <string name="navigation_drawer_close">Close Navigation drawer</string>
 </resources>

@@ -8,6 +8,55 @@
     tools:context=".RegisterFragment">
 
 
+    <TextView
+        android:id="@+id/SelectAMetricSystem"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_marginStart="133dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="132dp"
+        android:layout_marginBottom="8dp"
+        android:text="Select A Metric System"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.823" />
+
+    <Spinner
+        android:id="@+id/metricSystemS"
+        android:layout_width="271dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="72dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.877" />
+
+    <TextView
+        android:id="@+id/selectTransportType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="133dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="132dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/select_transport_type_bellow"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.715" />
+
     <EditText
         android:id="@+id/ConfirmPasswordTXTB"
         android:layout_width="271dp"
@@ -17,7 +66,7 @@
         android:layout_marginEnd="72dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:hint="Confirm Password"
+        android:hint="@string/confirm_password"
         android:inputType="textPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,7 +76,7 @@
         app:layout_constraintVertical_bias="0.54" />
 
     <Spinner
-        android:id="@+id/spinner2"
+        android:id="@+id/FuelTypeS"
         android:layout_width="271dp"
         android:layout_height="31dp"
         android:layout_marginStart="68dp"
@@ -36,22 +85,21 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.608" />
+        app:layout_constraintVertical_bias="0.662" />
 
     <EditText
         android:id="@+id/UsernameTXTB"
         android:layout_width="271dp"
         android:layout_height="45dp"
         android:layout_marginStart="68dp"
-
         android:layout_marginTop="8dp"
         android:layout_marginEnd="72dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:hint="Username"
+        android:hint="@string/username"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,12 +114,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="68dp"
         android:layout_marginTop="8dp"
-
         android:layout_marginEnd="72dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:hint="Email Address"
-        android:inputType="textPersonName"
+        android:hint="@string/email_address"
+        android:inputType="textEmailAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -89,7 +136,7 @@
         android:layout_marginEnd="71dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:hint="Surname"
+        android:hint="@string/surname"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -107,7 +154,7 @@
         android:layout_marginEnd="70dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:hint="First Name"
+        android:hint="@string/first_name"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -123,7 +170,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="142dp"
         android:layout_marginBottom="8dp"
-        android:text="Sign Up"
+        android:text="@string/sign_up"
         android:textSize="45sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -139,10 +186,10 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="162dp"
         android:layout_marginBottom="44dp"
-        android:text="SUBMIT"
+        android:text="@string/submit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
@@ -156,7 +203,7 @@
         android:layout_marginEnd="72dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:hint="Password"
+        android:hint="@string/password"
         android:inputType="textPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -166,7 +213,7 @@
         app:layout_constraintVertical_bias="0.453" />
 
     <Spinner
-        android:id="@+id/spinner"
+        android:id="@+id/TransportTypeS"
         android:layout_width="271dp"
         android:layout_height="31dp"
         android:layout_marginStart="68dp"
@@ -178,6 +225,23 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.675" />
+        app:layout_constraintVertical_bias="0.773" />
+
+    <TextView
+        android:id="@+id/selectFuelType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="133dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="132dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/select_fuel_type_bellow"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.609" />
 
 </android.support.constraint.ConstraintLayout>
