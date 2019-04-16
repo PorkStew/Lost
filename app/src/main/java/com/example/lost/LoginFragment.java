@@ -57,22 +57,16 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-
-
-
                 FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction transaction =fragmentManager.beginTransaction();
-                Fragment fragment = new HomeFragment(); // your fragment to add
-                transaction.replace(R.id.fragment_container, fragment); // a string in case you need to check with fragment is currently visible.
-                transaction.addToBackStack(null);
-                transaction.commit();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-                FragmentManager fragmentManagers = getFragmentManager();
-                FragmentTransaction transactions =fragmentManagers.beginTransaction();
-                Fragment fragments = new MenuFragment(); // your fragment to add
-                transactions.replace(R.id.fragment_container, fragments); // a string in case you need to check with fragment is currently visible.
-                transactions.addToBackStack(null);
-                transactions.commit();
+                FragmentTransaction fr = getFragmentManager().beginTransaction();
+                fr.replace(R.id.fragment_container, new Navigation_DrawerFragment());
+                fr.commit();
+                HomeFragment f = new HomeFragment();
+                fragmentTransaction.replace(R.id.ShowFragments, f)
+                        .addToBackStack(null)
+                        .commit();
 
 
 
@@ -88,5 +82,7 @@ public class LoginFragment extends Fragment {
     return view;
 
     }
+
+
 
 }
