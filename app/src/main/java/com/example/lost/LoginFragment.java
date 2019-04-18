@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,8 @@ import com.google.firebase.database.ValueEventListener;
  * A simple {@link Fragment} subclass.
  */
 public class LoginFragment extends Fragment {
+
+DatabaseReference databaseReference;
 
 
     public LoginFragment() {
@@ -41,9 +42,26 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                FragmentTransaction fr = getFragmentManager().beginTransaction();
-                fr.replace(R.id.fragment_container, new RegisterFragment());
-                fr.commit();
+               databaseReference = FirebaseDatabase.getInstance().getReference().child("USERS").child("-LcRKU6CF6dqtFovsf4_");
+               databaseReference.addValueEventListener(new ValueEventListener() {
+                   @Override
+                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                       String name = dataSnapshot.child("userName").getValue().toString();
+                       System.out.printf(name+" sssssssssssssssssssssssssssssssssssssss");
+                   }
+
+                   @Override
+                   public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                   }
+               });
+
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                RegisterFragment registerFragment = new RegisterFragment();
+                fragmentTransaction.replace(R.id.fragment_container, registerFragment)
+                        .addToBackStack(null)
+                        .commit();
 
 
             }
@@ -57,16 +75,23 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
+
+// Get a reference to our posts
+
+
+
+
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                FragmentTransaction fr = getFragmentManager().beginTransaction();
-                fr.replace(R.id.fragment_container, new Navigation_DrawerFragment());
-                fr.commit();
-                HomeFragment f = new HomeFragment();
-                fragmentTransaction.replace(R.id.ShowFragments, f)
+                Navigation_DrawerFragment navigation_drawerFragment = new Navigation_DrawerFragment();
+                fragmentTransaction.replace(R.id.fragment_container, navigation_drawerFragment)
                         .addToBackStack(null)
                         .commit();
+
+
+                FragmentTransaction frs = getFragmentManager().beginTransaction();
+                frs.replace(R.id.ShowFragments, new ProfileFragment());
+                frs.commit();
 
 
 
@@ -82,7 +107,6 @@ public class LoginFragment extends Fragment {
     return view;
 
     }
-
 
 
 }

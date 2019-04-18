@@ -26,10 +26,12 @@ public class Navigation_DrawerFragment extends Fragment {
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+
     public Navigation_DrawerFragment() {
 
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -43,7 +45,16 @@ public class Navigation_DrawerFragment extends Fragment {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
         drawerLayout = view.findViewById(R.id.drawer_layout);
+
         navigationView = view.findViewById(R.id.navigationView);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -53,22 +64,46 @@ public class Navigation_DrawerFragment extends Fragment {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 switch (menuItem.getItemId()) {
                     case R.id.nav_profile:
-                        displayMessage("profile selected....");
                         menuItem.setChecked(true);
-                        ProfileFragment fragment = new ProfileFragment();
-                        fragmentTransaction.replace(R.id.ShowFragments, fragment)
+                        ProfileFragment profileFragment = new ProfileFragment();
+                        fragmentTransaction.replace(R.id.ShowFragments, profileFragment)
                                 .addToBackStack(null)
                                 .commit();
                         drawerLayout.closeDrawers();
                         return true;
                     case R.id.nav_navigation:
-                        displayMessage("Navigation selected....");
                         menuItem.setChecked(true);
-                        HomeFragment f = new HomeFragment();
-                        fragmentTransaction.replace(R.id.ShowFragments, f)
+                        HomeFragment homeFragment = new HomeFragment();
+                        fragmentTransaction.replace(R.id.ShowFragments, homeFragment)
                                 .addToBackStack(null)
                                 .commit();
                         drawerLayout.closeDrawers();
+                        return true;
+                    case R.id.nav_preferences:
+                        menuItem.setChecked(true);
+                        PreferencesFragment preferencesFragment = new PreferencesFragment();
+                        fragmentTransaction.replace(R.id.ShowFragments, preferencesFragment)
+                                .addToBackStack(null)
+                                .commit();
+                        drawerLayout.closeDrawers();
+                        return true;
+                    case R.id.nav_about:
+                        menuItem.setChecked(true);
+                        InformationFragment informationFragment = new InformationFragment();
+                        fragmentTransaction.replace(R.id.ShowFragments, informationFragment)
+                                .addToBackStack(null)
+                                .commit();
+                        drawerLayout.closeDrawers();
+                        return true;
+                    case R.id.nav_logout:
+                        menuItem.setChecked(true);
+                        LoginFragment loginFragment = new LoginFragment();
+                        fragmentTransaction.replace(R.id.fragment_container, loginFragment)
+                                .addToBackStack(null)
+                                .commit();
+                        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                        drawerLayout.closeDrawers();
+
                         return true;
                 }
                 return false;
@@ -80,17 +115,5 @@ public class Navigation_DrawerFragment extends Fragment {
 
     private void displayMessage(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                drawerLayout.openDrawer(GravityCompat.START);
-                return true;
-        }
-
-
-        return super.onOptionsItemSelected(item);
     }
 }
