@@ -11,12 +11,11 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,6 +39,7 @@ public class Navigation_DrawerFragment extends Fragment {
         //create toolbar listener
         toolbar = view.findViewById(R.id.toolBar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
         //creates an action bar to which a button is added to open drawer
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -109,11 +109,6 @@ public class Navigation_DrawerFragment extends Fragment {
                 return false;
             }
         });
-
         return view;
-    }
-
-    private void displayMessage(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

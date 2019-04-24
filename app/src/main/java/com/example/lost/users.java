@@ -9,6 +9,7 @@ public class users {
     private String fuelType;
     private String password;
     private String metricSystem;
+    private static String ID;
 
     public users(){
 
@@ -87,5 +88,13 @@ public class users {
 
     public void setMetricSystem(String metricSystem) {
         this.metricSystem = metricSystem;
+    }
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
     }
 }

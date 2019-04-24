@@ -11,21 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mapbox.android.core.location.LocationEngine;
-import com.mapbox.android.core.location.LocationEngineProvider;
-import com.mapbox.android.core.location.LocationEngineRequest;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
-import com.mapbox.mapboxsdk.location.modes.CameraMode;
-import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 
 import java.util.List;
 
@@ -33,13 +27,17 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements OnMapReadyCallback, LocationListener, PermissionsListener {
+public class HomeFragment extends Fragment implements OnMapReadyCallback, LocationListener, PermissionsListener, MapboxMap.OnMapClickListener {
     private MapView mapView;
     private MapboxMap map;
+
+    //gets user location
     private PermissionsManager permissionsManager;
     private LocationEngine locationEngine;
-    private LocationLayerPlugin locationLayerPlugin;
-    private Location originlocation;
+    private LocationComponent locationComponent;
+    private Location location;
+
+
     private long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
     private long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
 
@@ -56,42 +54,45 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         mapView = view.findViewById(R.id.mapViews);
+
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull final MapboxMap mapboxMap) {
-
+                map = mapboxMap;
+                enableLocation();
             mapboxMap.setStyle(Style.DARK, new Style.OnStyleLoaded() {
+
+
                 @Override
                 public void onStyleLoaded(@NonNull Style style) {
-                    map = mapboxMap;
-                    enableLocation();
+                    enableLocationComponent(style);
                 }
             });
 
             }
         });
+
         return view;
     }
-@SuppressWarnings("MissingPermission")
+private void enableLocation(){
+    System.out.println("hello again");
+    if(PermissionsManager.areLocationPermissionsGranted(getContext()))
+    {
+    initializeLocationEngine();
+    initializeLocationLayer();
+    }else{
+        permissionsManager = new PermissionsManager(this);
+        permissionsManager.requestLocationPermissions(getActivity());
+    }
+}
 private void initializeLocationEngine(){
-    locationEngine = LocationEngineProvider.getBestLocationEngine(getActivity());
-    LocationEngineRequest request = new LocationEngineRequest.Builder(DEFAULT_INTERVAL_IN_MILLISECONDS)
-            .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
-            .setMaxWaitTime(DEFAULT_MAX_WAIT_TIME).build();
-   // Location lastlocation = locationEngine.getLastLocation(this.getContext());
-   // if(lastlocation != null){
-    //    originlocation = lastlocation;
-    //    setCameraPostion(lastlocation);
-    //} else{
-       // locationEngine.addLocationEngineListener(getActivity());
-  //  }
-}
-private void setCameraPostion(Location location){
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13.0));
-}
 
-    // Add the mapView's own lifecycle methods to the activity's lifecycle methods
+}
+private void initializeLocationLayer(){
+
+}
+        // Add the mapView's own lifecycle methods to the activity's lifecycle methods
     @Override
     public void onStart() {
         super.onStart();
@@ -136,45 +137,23 @@ private void setCameraPostion(Location location){
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
-    map = mapboxMap;
-    enableLocation();
+    mapboxMap = mapboxMap;
+
 
     }
-private void enableLocation(){
-    if(PermissionsManager.areLocationPermissionsGranted(getActivity())){
-
-
-        // Get an instance of the component
-        LocationComponent locationComponent = map.getLocationComponent();
-
-// Enable to make component visible
-        locationComponent.setLocationComponentEnabled(true);
-
-// Set the component's camera mode
-        locationComponent.setCameraMode(CameraMode.TRACKING);
-
-// Set the component's render mode
-        locationComponent.setRenderMode(RenderMode.COMPASS);
-
-
-initializeLocationEngine();
-
-    }else{
-        permissionsManager = new PermissionsManager(this);
-        permissionsManager.requestLocationPermissions(getActivity());
-    }
-}
-
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
-//show message
+     //   Toast.makeText(this, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onPermissionResult(boolean granted) {
-if(granted){
-    enableLocation();
-}
+        if (granted) {
+            enableLocation();
+        } else {
+         //   Toast.makeText(this, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show();
+          //  finish();
+        }
     }
 
     @Override
@@ -200,5 +179,16 @@ if(granted){
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+    @SuppressWarnings( {"MissingPermission"})
+    private void enableLocationComponent(@NonNull Style loadedMapStyle) {
+        System.out.println("show location please");
+
+    }
+
+
+    @Override
+    public boolean onMapClick(@NonNull LatLng point) {
+        return false;
     }
 }

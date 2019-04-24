@@ -1,8 +1,6 @@
 package com.example.lost;
 
 
-import android.app.Application;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -17,7 +15,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -33,12 +30,11 @@ public class RegisterFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register, container, false);
-
+        //creates data for fueltype spinner and creates a listener for the spinner
         String[] data = {"none", "unleaded 93", "unleaded 95", "diesel"};
         final Spinner FuelTypeS = (Spinner) view.findViewById(R.id.FuelTypeS);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, data);
@@ -55,11 +51,10 @@ public class RegisterFragment extends Fragment {
 
             }
         });
-
+        //creates data for transport type spinner and creates a listener for the spinner
         String[] TransPortTypeData = {"none","car", "bus", "train", "bike"};
         final Spinner TransportTypeS = (Spinner) view.findViewById(R.id.TransportTypeS);
         ArrayAdapter<String> TransportTypeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, TransPortTypeData);
-
         TransportTypeS.setAdapter(TransportTypeAdapter);
         TransportTypeAdapter.notifyDataSetChanged();
         TransportTypeS.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -73,6 +68,7 @@ public class RegisterFragment extends Fragment {
 
             }
         });
+        //creates data for metric system spinner and creates a listener for the spinner
         String[] metricSystemData = {"none","Kilometers", "Miles"};
         final Spinner metricSystemDataS = (Spinner) view.findViewById(R.id.metricSystemS);
         ArrayAdapter<String> metricSystemAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, metricSystemData);
@@ -90,7 +86,7 @@ public class RegisterFragment extends Fragment {
 
             }
         });
-        // declarations
+        // variable declarations and links EditView with a TextView
         Button submitB = view.findViewById(R.id.SubmitB);
         final EditText firstName = view.findViewById(R.id.FirstNameTXTB);
         final EditText surname = view.findViewById(R.id.SurnameTXTB);
@@ -98,12 +94,11 @@ public class RegisterFragment extends Fragment {
         final EditText emailAddress = view.findViewById(R.id.EmailTXTB);
         final EditText password = view.findViewById(R.id.PasswordTXTB);
         final EditText confirmPassword = view.findViewById(R.id.ConfirmPasswordTXTB);
-        //submit button listener
+        //submit button listener which gets text from each TextView and puts it into a String
         submitB.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
                 String FirstName = firstName.getText().toString();
                 String Surname = surname.getText().toString();
                 String UserName = username.getText().toString();
@@ -113,7 +108,7 @@ public class RegisterFragment extends Fragment {
                 String TransportType = TransportTypeS.getSelectedItem().toString();
                 String FuelType = FuelTypeS.getSelectedItem().toString();
                 String MetricSystem = metricSystemDataS.getSelectedItem().toString();
-                //input data into a class and send to firebase database
+                //Checks data to see if requirements specified are meet
                 if (TextUtils.isEmpty(FirstName) || TextUtils.isEmpty(Surname) || TextUtils.isEmpty(UserName) || TextUtils.isEmpty(EmailAddress) || TextUtils.isEmpty(Password) || TextUtils.isEmpty(ConfirmPassword)) {
                     Toast.makeText(getActivity(), "Information missing!!!",
                             Toast.LENGTH_SHORT).show();
@@ -131,6 +126,7 @@ public class RegisterFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                 } else
                 {
+                    //inputs data into a class call users and then inputs that into Firebase and a database class
                     users user = new users(FirstName, Surname, UserName, EmailAddress, FuelType, TransportType, Password, MetricSystem);
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference databaseReference = database.getReference("USERS");
@@ -138,8 +134,7 @@ public class RegisterFragment extends Fragment {
                     //calls login fragment
                     FragmentTransaction fr = getFragmentManager().beginTransaction();
                     fr.replace(R.id.fragment_container, new LoginFragment());
-                    Toast.makeText(getActivity(), "Registration Successful!!",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Registration Successful!!", Toast.LENGTH_SHORT).show();
                     fr.commit();
                 }
             }
