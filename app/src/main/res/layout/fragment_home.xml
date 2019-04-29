@@ -10,9 +10,6 @@ tools:context=".HomeFragment">
         android:id="@+id/mapViews"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        mapbox:mapbox_cameraTargetLat="-26.0933668"
-        mapbox:mapbox_cameraTargetLng="28.0355486"
-
         mapbox:mapbox_cameraZoom="12"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="65dp" />

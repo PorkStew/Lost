@@ -3,7 +3,7 @@
     <string name="access_token">pk.eyJ1IjoicG9ya3N0ZXciLCJhIjoiY2p1ZWZyM3l2MDJ1cjN5cWoxY2NyNXc3byJ9.Kin5udqmCSwiuoZGRctCpg</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="user_location_permission_explanation">This app needs location permissions to show its functionality.</string>
-    <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
+    <string name="user_location_permission_not_granted">You didnt grant location permissions.</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="select_fuel_type_bellow">Select Fuel Type Bellow</string>
     <string name="password">Password</string>

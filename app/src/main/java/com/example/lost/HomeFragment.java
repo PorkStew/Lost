@@ -6,22 +6,32 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
+import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
+import com.mapbox.mapboxsdk.location.modes.CameraMode;
+import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.ui.PlaceAutocompleteFragment;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.ui.PlaceSelectionListener;
 
 import java.util.List;
+
+import static android.support.constraint.Constraints.TAG;
 
 
 /**
@@ -32,15 +42,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private MapboxMap map;
 
     //gets user location
-    private PermissionsManager permissionsManager;
     private LocationEngine locationEngine;
     private LocationComponent locationComponent;
     private Location location;
 
-
+    PermissionsManager permissionsManager = new PermissionsManager(this);
     private long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
     private long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
-
+    PlaceAutocompleteFragment autocompleteFragment;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -48,7 +57,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Mapbox.getInstance(getActivity(), getString(R.string.access_token));
 
@@ -60,13 +69,43 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             @Override
             public void onMapReady(@NonNull final MapboxMap mapboxMap) {
                 map = mapboxMap;
-                enableLocation();
-            mapboxMap.setStyle(Style.DARK, new Style.OnStyleLoaded() {
+
+            mapboxMap.setStyle(Style.LIGHT, new Style.OnStyleLoaded() {
 
 
                 @Override
                 public void onStyleLoaded(@NonNull Style style) {
                     enableLocationComponent(style);
+                    if (savedInstanceState == null) {
+                        autocompleteFragment = PlaceAutocompleteFragment.newInstance(getString(R.string.access_token));
+
+                        final FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                        transaction.add(R.id.fragment_container, autocompleteFragment,TAG);
+                        transaction.commit();
+
+                    } else {
+                        autocompleteFragment = (PlaceAutocompleteFragment)
+                                getFragmentManager().findFragmentByTag(TAG);
+                    }
+                    autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+                        @Override
+                        public void onPlaceSelected(CarmenFeature carmenFeature) {
+
+                            Toast.makeText(getActivity(), "This is my Toast message!",
+                                    Toast.LENGTH_LONG).show();
+
+
+                        }
+
+                        @Override
+                        public void onCancel() {
+
+
+                            Toast.makeText(getActivity(), "This is my Toast message!",
+                                    Toast.LENGTH_LONG).show();
+
+                        }
+                    });
                 }
             });
 
@@ -75,23 +114,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
         return view;
     }
-private void enableLocation(){
-    System.out.println("hello again");
-    if(PermissionsManager.areLocationPermissionsGranted(getContext()))
-    {
-    initializeLocationEngine();
-    initializeLocationLayer();
-    }else{
-        permissionsManager = new PermissionsManager(this);
-        permissionsManager.requestLocationPermissions(getActivity());
-    }
-}
-private void initializeLocationEngine(){
-
-}
-private void initializeLocationLayer(){
-
-}
         // Add the mapView's own lifecycle methods to the activity's lifecycle methods
     @Override
     public void onStart() {
@@ -149,13 +171,15 @@ private void initializeLocationLayer(){
     @Override
     public void onPermissionResult(boolean granted) {
         if (granted) {
-            enableLocation();
+
         } else {
          //   Toast.makeText(this, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show();
           //  finish();
         }
     }
 
+
+    // gets permission for location
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -182,7 +206,32 @@ private void initializeLocationLayer(){
     }
     @SuppressWarnings( {"MissingPermission"})
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
-        System.out.println("show location please");
+        System.out.println("get map location please");
+        if(PermissionsManager.areLocationPermissionsGranted(getContext()))
+        {
+            // Get an instance of the component
+            LocationComponent locationComponent = map.getLocationComponent();
+
+// Activate with options
+            locationComponent.activateLocationComponent(
+                    LocationComponentActivationOptions.builder(this.getContext(), loadedMapStyle).build());
+
+// Enable to make component visible
+            locationComponent.setLocationComponentEnabled(true);
+
+// Set the component's camera mode
+            locationComponent.setCameraMode(CameraMode.TRACKING);
+
+// Set the component's render mode
+            locationComponent.setRenderMode(RenderMode.COMPASS);
+
+
+
+        }else{
+
+            permissionsManager = new PermissionsManager(this);
+            permissionsManager.requestLocationPermissions(getActivity());
+        }
 
     }
 

@@ -90,7 +90,7 @@ public class LoginFragment extends Fragment {
                         if (UserName.equals(usernameDatabase) && passwordDatabase.equals(Password)) {
                             FragmentManager fragmentManager = getFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            Navigation_DrawerFragment navigation_drawerFragment = new Navigation_DrawerFragment();
+                            HomeFragment navigation_drawerFragment = new HomeFragment();
                             fragmentTransaction.replace(R.id.fragment_container, navigation_drawerFragment)
                                     .addToBackStack(null)
                                     .commit();
