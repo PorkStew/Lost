@@ -2,18 +2,21 @@ package com.example.lost;
 
 
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
@@ -31,14 +34,17 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements OnMapReadyCallback, LocationListener, PermissionsListener, MapboxMap.OnMapClickListener {
+public class HomeFragment extends Fragment implements PermissionsListener, MapboxMap.OnMapClickListener {
     private MapView mapView;
     private MapboxMap map;
-
+    private Button startButton;
     //gets user location
     private LocationEngine locationEngine;
     private LocationComponent locationComponent;
-    private Location location;
+    private Location originlocation;
+    private Marker destinationMarker;
+    private Point originPosition;
+    private Point destinationPostion;
 
     PermissionsManager permissionsManager = new PermissionsManager(this);
     PlaceAutocompleteFragment autocompleteFragment;
@@ -56,6 +62,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         mapView = view.findViewById(R.id.mapViews);
 
+        startButton = view.findViewById(R.id.startB);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //launch navigation ui
+            }
+        });
+
+
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -63,41 +78,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 map = mapboxMap;
 
             mapboxMap.setStyle(Style.LIGHT, new Style.OnStyleLoaded() {
-
-
                 @Override
                 public void onStyleLoaded(@NonNull Style style) {
                     enableLocationComponent(style);
-            ///        if (savedInstanceState == null) {
-               //         autocompleteFragment = PlaceAutocompleteFragment.newInstance(getString(R.string.access_token));
-
-                 ///       final FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                    //    transaction.add(R.id.fragment_container, autocompleteFragment,TAG);
-                      //  transaction.commit();
-
-                   // } else {
-                    //    autocompleteFragment = (PlaceAutocompleteFragment)
-                  //              getFragmentManager().findFragmentByTag(TAG);
-                   // }
-                 //   autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-               //         @Override
-             //           public void onPlaceSelected(CarmenFeature carmenFeature) {
-
-           //                 Toast.makeText(getActivity(), "This is my Toast message!",
-         //                           Toast.LENGTH_LONG).show();
 
 
-      ///                  }
-
-    //                    @Override
-  //                      public void onCancel() {
-//
-//
-     //                       Toast.makeText(getActivity(), "This is my Toast message!",
-   //                                 Toast.LENGTH_LONG).show();
-///
-                   ///     }
-                 //   });
                 }
             });
 
@@ -112,6 +97,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         super.onStart();
         mapView.onStart();
     }
+
 
     @Override
     public void onResume() {
@@ -143,17 +129,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         mapView.onDestroy();
     }
 
+
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onMapReady(@NonNull MapboxMap mapboxMap) {
-    mapboxMap = mapboxMap;
-
-
     }
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
@@ -162,12 +143,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public void onPermissionResult(boolean granted) {
-        if (granted) {
-
-        } else {
-         //   Toast.makeText(this, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show();
-          //  finish();
-        }
     }
 
 
@@ -176,45 +151,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-
-    @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
     @SuppressWarnings( {"MissingPermission"})
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
-        System.out.println("get map location please");
         if(PermissionsManager.areLocationPermissionsGranted(getContext()))
         {
-            // Get an instance of the component
             LocationComponent locationComponent = map.getLocationComponent();
-
-// Activate with options
             locationComponent.activateLocationComponent(
                     LocationComponentActivationOptions.builder(this.getContext(), loadedMapStyle).build());
-
-// Enable to make component visible
             locationComponent.setLocationComponentEnabled(true);
-
-// Set the component's camera mode
             locationComponent.setCameraMode(CameraMode.TRACKING);
-
-// Set the component's render mode
             locationComponent.setRenderMode(RenderMode.GPS);
 
         }else{
@@ -228,6 +173,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
+        destinationMarker = map.addMarker(new MarkerOptions().position(point));
+        destinationPostion = Point.fromLngLat(point.getLongitude(), point.getLatitude());
+        originPosition = Point.fromLngLat(originlocation.getLongitude(), originlocation.getLatitude());
+        startButton.setEnabled(true);
+        startButton.setBackgroundResource(R.color.mapbox_blue);
+        System.out.println("ayy please place a pin please");
         return false;
     }
 }
