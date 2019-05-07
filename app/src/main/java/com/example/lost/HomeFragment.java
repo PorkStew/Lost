@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
@@ -108,8 +109,6 @@ public class HomeFragment extends Fragment implements PermissionsListener{
             }
         });
         mapView.onCreate(savedInstanceState);
-
-
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull final MapboxMap mapboxMap) {
@@ -133,7 +132,6 @@ public class HomeFragment extends Fragment implements PermissionsListener{
                             }
                             //call method to show user location
                             showUserRoute(usersOriginPoint, usersDestinationPoint);
-
                             startButton.setEnabled(true);
                             return true;
                         }
@@ -141,6 +139,7 @@ public class HomeFragment extends Fragment implements PermissionsListener{
                     enableLocationComponent(style);
                     initSearchFab();
                     addDestinationIconSymbolLayer(style);
+
                 }
             });
             }
@@ -149,9 +148,19 @@ public class HomeFragment extends Fragment implements PermissionsListener{
     }
 
     private void showUserRoute(Point origin, Point destination) {
-        NavigationRoute.builder(getActivity()).accessToken(Mapbox.getAccessToken()).origin(origin).destination(destination).build().getRoute(new Callback<DirectionsResponse>() {
+
+        NavigationRoute.builder(getContext())
+
+                .accessToken(Mapbox.getAccessToken())
+                .origin(origin)
+                .alternatives(true)
+                .destination(destination)
+                .profile(DirectionsCriteria.PROFILE_DRIVING_TRAFFIC)
+                .build()
+                .getRoute(new Callback<DirectionsResponse>() {
                     @Override
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+// You can get the generic HTTP info about the response
                         Log.d(TAG, "Response code: " + response.code());
                         if (response.body() == null) {
                             Log.e(TAG, "No routes found, make sure you set the right user and access token.");
@@ -164,17 +173,19 @@ public class HomeFragment extends Fragment implements PermissionsListener{
                         currentRoute = response.body().routes().get(0);
 
 // Draw the route on the map
+
                         if (navigationMapRoute != null) {
                             navigationMapRoute.removeRoute();
                         } else {
                             navigationMapRoute = new NavigationMapRoute(null, mapView, MainMapboxMap, R.style.NavigationMapRoute);
                         }
+
                         navigationMapRoute.addRoute(currentRoute);
                     }
 
                     @Override
-                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
-                        Log.e(TAG, "Error: " + t.getMessage());
+                    public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
+                        Log.e(TAG, "Error: " + throwable.getMessage());
                     }
                 });
     }
@@ -192,6 +203,7 @@ public class HomeFragment extends Fragment implements PermissionsListener{
             @Override
             public void onClick(View v) {
                 Intent intent = new PlaceAutocomplete.IntentBuilder().accessToken(Mapbox.getAccessToken()).placeOptions(PlaceOptions.builder().build(PlaceOptions.MODE_CARDS)).build(getActivity());startActivityForResult(intent, completeAdress);
+
             }
         });
     }
@@ -200,6 +212,7 @@ public class HomeFragment extends Fragment implements PermissionsListener{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == completeAdress) {
+
 // Retrieve selected location's CarmenFeature
             CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
             BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default);
@@ -215,6 +228,7 @@ public class HomeFragment extends Fragment implements PermissionsListener{
                                         ((Point) selectedCarmenFeature.geometry()).longitude()))
                                 .zoom(16.0)
                                 .build()), 4000);
+
             }
 
         }

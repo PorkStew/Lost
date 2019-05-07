@@ -27,10 +27,10 @@ tools:context=".HomeFragment">
         android:src="@drawable/ic_search_black_24dp"
         mapbox:layout_constraintBottom_toBottomOf="@+id/mapViews"
         mapbox:layout_constraintEnd_toEndOf="parent"
-        mapbox:layout_constraintHorizontal_bias="0.976"
+        mapbox:layout_constraintHorizontal_bias="0.836"
         mapbox:layout_constraintStart_toStartOf="parent"
         mapbox:layout_constraintTop_toTopOf="parent"
-        mapbox:layout_constraintVertical_bias="0.012" />
+        mapbox:layout_constraintVertical_bias="0.034" />
 
     <Button
         android:id="@+id/startB"
@@ -44,9 +44,9 @@ tools:context=".HomeFragment">
         android:text="Start Navigating"
         mapbox:layout_constraintBottom_toBottomOf="@+id/mapViews"
         mapbox:layout_constraintEnd_toEndOf="parent"
-        mapbox:layout_constraintHorizontal_bias="0.609"
+        mapbox:layout_constraintHorizontal_bias="0.487"
         mapbox:layout_constraintStart_toStartOf="parent"
         mapbox:layout_constraintTop_toTopOf="@+id/mapViews"
-        mapbox:layout_constraintVertical_bias="0.975" />
+        mapbox:layout_constraintVertical_bias="0.819" />
 
 </android.support.constraint.ConstraintLayout>
