@@ -1,29 +1,28 @@
 package com.example.lost;
 
 
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -37,11 +36,18 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
-import com.mapbox.mapboxsdk.plugins.places.autocomplete.ui.PlaceAutocompleteFragment;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
+import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
@@ -50,24 +56,25 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements PermissionsListener, MapboxMap.OnMapClickListener, OnMapReadyCallback{
+public class HomeFragment extends Fragment implements PermissionsListener{
 
 
     // variables for adding location layer
-    private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
+    private static final int completeAdress = 1;
     private MapView mapView;
-    private MapboxMap map;
+    private MapboxMap MainMapboxMap;
+
+    //variable declarations for buttons
     private Button startButton;
     private FloatingActionButton fab_location_search;
-    //gets user location
-    private LocationEngine locationEngine;
-    private LocationComponent locationComponent;
-    private Location originlocation;
-    private Marker destinationMarker;
 
+    //This will get the best route
+    private DirectionsRoute currentRoute;
+    private static final String TAG = "DirectionsActivity";
+    private NavigationMapRoute navigationMapRoute;
 
     PermissionsManager permissionsManager = new PermissionsManager(this);
-    PlaceAutocompleteFragment autocompleteFragment;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -76,97 +83,115 @@ public class HomeFragment extends Fragment implements PermissionsListener, Mapbo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        //this gets my mapbox token
         Mapbox.getInstance(getActivity(), getString(R.string.access_token));
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        //links views together between map and buttons
         mapView = view.findViewById(R.id.mapViews);
-
         startButton = view.findViewById(R.id.startB);
         fab_location_search = view.findViewById(R.id.fab_location_searchB);
+
+        //start navigation button listener
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //launch navigation ui
+                Toast.makeText(getActivity(), "button clicked",
+                        Toast.LENGTH_SHORT).show();
+                boolean simulateRoute = true;
+                NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                        .directionsRoute(currentRoute)
+                        .shouldSimulateRoute(false)
+                        .build();
+// Call this method with Context from within an Activity
+                NavigationLauncher.startNavigation(getActivity(), options);
             }
         });
-
-
         mapView.onCreate(savedInstanceState);
+
+
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull final MapboxMap mapboxMap) {
-                map = mapboxMap;
+                MainMapboxMap = mapboxMap;
 
             mapboxMap.setStyle(Style.LIGHT, new Style.OnStyleLoaded() {
                 @Override
                 public void onStyleLoaded(@NonNull Style style) {
 
-                    map.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
+                    MainMapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
                         @Override
                         public boolean onMapClick(@NonNull LatLng point) {
-                            Toast.makeText(getActivity(), "ssssssss",
-                                    Toast.LENGTH_SHORT).show();
-                            Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
+                            Point usersDestinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
                             Toast.makeText(getActivity(), "Map Clicked", Toast.LENGTH_SHORT).show();
-                            Point originPoint = Point.fromLngLat(point.getLongitude(),
+                            Point usersOriginPoint = Point.fromLngLat(point.getLongitude(),
                                     point.getLatitude());
 
-                            GeoJsonSource source = map.getStyle().getSourceAs("destination-source-id");
-                            if (source != null) {
-                                source.setGeoJson(Feature.fromGeometry(destinationPoint));
+                            GeoJsonSource geoJsonSource = MainMapboxMap.getStyle().getSourceAs("destination-source-id");
+                            if (geoJsonSource != null) {
+                                geoJsonSource.setGeoJson(Feature.fromGeometry(usersDestinationPoint));
                             }
+                            //call method to show user location
+                            showUserRoute(usersOriginPoint, usersDestinationPoint);
 
-                            //getRoute(originPoint, destinationPoint);
                             startButton.setEnabled(true);
                             return true;
-
-
-
                         }
                     });
                     enableLocationComponent(style);
                     initSearchFab();
                     addDestinationIconSymbolLayer(style);
-
-
                 }
             });
-
             }
         });
-
         return view;
+    }
+
+    private void showUserRoute(Point origin, Point destination) {
+        NavigationRoute.builder(getActivity()).accessToken(Mapbox.getAccessToken()).origin(origin).destination(destination).build().getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                        Log.d(TAG, "Response code: " + response.code());
+                        if (response.body() == null) {
+                            Log.e(TAG, "No routes found, make sure you set the right user and access token.");
+                            return;
+                        } else if (response.body().routes().size() < 1) {
+                            Log.e(TAG, "No routes found");
+                            return;
+                        }
+
+                        currentRoute = response.body().routes().get(0);
+
+// Draw the route on the map
+                        if (navigationMapRoute != null) {
+                            navigationMapRoute.removeRoute();
+                        } else {
+                            navigationMapRoute = new NavigationMapRoute(null, mapView, MainMapboxMap, R.style.NavigationMapRoute);
+                        }
+                        navigationMapRoute.addRoute(currentRoute);
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                        Log.e(TAG, "Error: " + t.getMessage());
+                    }
+                });
     }
     private void addDestinationIconSymbolLayer(@NonNull Style loadedMapStyle) {
 
-        Toast.makeText(getActivity(), "Hello i am in add destionation icon",
-                Toast.LENGTH_SHORT).show();
-
-        loadedMapStyle.addImage("destination-icon-id",
-                BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default));
+        loadedMapStyle.addImage("destination-icon-id", BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default));
         GeoJsonSource geoJsonSource = new GeoJsonSource("destination-source-id");
         loadedMapStyle.addSource(geoJsonSource);
         SymbolLayer destinationSymbolLayer = new SymbolLayer("destination-symbol-layer-id", "destination-source-id");
-        destinationSymbolLayer.withProperties(
-                iconImage("destination-icon-id"),
-                iconAllowOverlap(true),
-                iconIgnorePlacement(true)
-        );
+        destinationSymbolLayer.withProperties( iconImage("destination-icon-id"), iconAllowOverlap(true), iconIgnorePlacement(true));
         loadedMapStyle.addLayer(destinationSymbolLayer);
     }
     private void initSearchFab() {
         fab_location_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new PlaceAutocomplete.IntentBuilder()
-                        .accessToken(Mapbox.getAccessToken())
-                        .placeOptions(PlaceOptions.builder()
-                                .build(PlaceOptions.MODE_CARDS))
-                        .build(getActivity());
-                startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE);
-
-
+                Intent intent = new PlaceAutocomplete.IntentBuilder().accessToken(Mapbox.getAccessToken()).placeOptions(PlaceOptions.builder().build(PlaceOptions.MODE_CARDS)).build(getActivity());startActivityForResult(intent, completeAdress);
             }
         });
     }
@@ -174,34 +199,28 @@ public class HomeFragment extends Fragment implements PermissionsListener, Mapbo
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE) {
-
+        if (resultCode == Activity.RESULT_OK && requestCode == completeAdress) {
 // Retrieve selected location's CarmenFeature
             CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
             BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default);
-
 // Create a new FeatureCollection and add a new Feature to it using selectedCarmenFeature above.
 // Then retrieve and update the source designated for showing a selected location's symbol layer icon
 
-            if (map != null) {
-                Style style = map.getStyle();
-
-
+            if (MainMapboxMap != null) {
+                Style style = MainMapboxMap.getStyle();
 // Move map camera to the selected location
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(
+                MainMapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                         new CameraPosition.Builder()
                                 .target(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
                                         ((Point) selectedCarmenFeature.geometry()).longitude()))
                                 .zoom(16.0)
                                 .build()), 4000);
-
             }
 
         }
 
     }
-
-
+    
      //   this displays the map
     @Override
     public void onStart() {
@@ -240,10 +259,14 @@ public class HomeFragment extends Fragment implements PermissionsListener, Mapbo
     }
 
 
+
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
      //   Toast.makeText(this, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show();
     }
+
+
+
 
 //gets user promissions
     @Override
@@ -254,11 +277,13 @@ public class HomeFragment extends Fragment implements PermissionsListener, Mapbo
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
+
+
     @SuppressWarnings( {"MissingPermission"})
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
         if(PermissionsManager.areLocationPermissionsGranted(getContext()))
         {
-            LocationComponent locationComponent = map.getLocationComponent();
+            LocationComponent locationComponent = MainMapboxMap.getLocationComponent();
             locationComponent.activateLocationComponent(
                     LocationComponentActivationOptions.builder(this.getContext(), loadedMapStyle).build());
             locationComponent.setLocationComponentEnabled(true);
@@ -271,14 +296,5 @@ public class HomeFragment extends Fragment implements PermissionsListener, Mapbo
             permissionsManager.requestLocationPermissions(getActivity());
         }
 
-    }
-    @Override
-    public void onMapReady(@NonNull MapboxMap mapboxMap) {
-
-    }
-
-    @Override
-    public boolean onMapClick(@NonNull LatLng latLng) {
-        return false;
     }
 }
