@@ -58,53 +58,39 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
  * A simple {@link Fragment} subclass.
  */
 public class HomeFragment extends Fragment implements PermissionsListener{
-
-
     // variables for adding location layer
-    private static final int completeAdress = 1;
     private MapView mapView;
     private MapboxMap MainMapboxMap;
 
     //variable declarations for buttons
     private Button startButton;
-    private FloatingActionButton fab_location_search;
+    private static final int requestCode = 1;
+    private FloatingActionButton searchBarB;
 
     //This will get the best route
     private DirectionsRoute currentRoute;
+    private NavigationMapRoute navigationRoute;
     private static final String TAG = "DirectionsActivity";
-    private NavigationMapRoute navigationMapRoute;
-
     PermissionsManager permissionsManager = new PermissionsManager(this);
-
     public HomeFragment() {
         // Required empty public constructor
     }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
-        //this gets my mapbox token
+        //this gets the MapBox token to allow map displaying
         Mapbox.getInstance(getActivity(), getString(R.string.access_token));
-
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         //links views together between map and buttons
         mapView = view.findViewById(R.id.mapViews);
         startButton = view.findViewById(R.id.startB);
-        fab_location_search = view.findViewById(R.id.fab_location_searchB);
-
+        searchBarB = view.findViewById(R.id.searchBarB);
         //start navigation button listener
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "button clicked",
-                        Toast.LENGTH_SHORT).show();
                 boolean simulateRoute = true;
-                NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                        .directionsRoute(currentRoute)
-                        .shouldSimulateRoute(false)
-                        .build();
-// Call this method with Context from within an Activity
+                NavigationLauncherOptions options = NavigationLauncherOptions.builder().directionsRoute(currentRoute).shouldSimulateRoute(false).build();
                 NavigationLauncher.startNavigation(getActivity(), options);
             }
         });
@@ -112,85 +98,67 @@ public class HomeFragment extends Fragment implements PermissionsListener{
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull final MapboxMap mapboxMap) {
+                //this iniziates the map
                 MainMapboxMap = mapboxMap;
 
-            mapboxMap.setStyle(Style.LIGHT, new Style.OnStyleLoaded() {
+            mapboxMap.setStyle(Style.DARK, new Style.OnStyleLoaded() {
                 @Override
                 public void onStyleLoaded(@NonNull Style style) {
 
                     MainMapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
                         @Override
                         public boolean onMapClick(@NonNull LatLng point) {
+                            //this adds marker to map to get route
                             Point usersDestinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
-                            Toast.makeText(getActivity(), "Map Clicked", Toast.LENGTH_SHORT).show();
-                            Point usersOriginPoint = Point.fromLngLat(point.getLongitude(),
-                                    point.getLatitude());
-
+                            Point usersOriginPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
                             GeoJsonSource geoJsonSource = MainMapboxMap.getStyle().getSourceAs("destination-source-id");
                             if (geoJsonSource != null) {
                                 geoJsonSource.setGeoJson(Feature.fromGeometry(usersDestinationPoint));
                             }
-                            //call method to show user location
+                            //this shows the users location
                             showUserRoute(usersOriginPoint, usersDestinationPoint);
                             startButton.setEnabled(true);
                             return true;
                         }
                     });
-                    enableLocationComponent(style);
-                    initSearchFab();
-                    addDestinationIconSymbolLayer(style);
-
+                    //method calls
+                    locationEnable(style);
+                    searchBar();
+                    addMarker(style);
                 }
             });
             }
         });
         return view;
     }
-
+    //once a pin has been dropped and the start button has been clicked a route will be shown
     private void showUserRoute(Point origin, Point destination) {
-
-        NavigationRoute.builder(getContext())
-
-                .accessToken(Mapbox.getAccessToken())
-                .origin(origin)
-                .alternatives(true)
-                .destination(destination)
-                .profile(DirectionsCriteria.PROFILE_DRIVING_TRAFFIC)
-                .build()
-                .getRoute(new Callback<DirectionsResponse>() {
+        NavigationRoute.builder(getContext()).accessToken(Mapbox.getAccessToken()).origin(origin).alternatives(true).destination(destination).profile(DirectionsCriteria.PROFILE_DRIVING_TRAFFIC).build() .getRoute(new Callback<DirectionsResponse>() {
                     @Override
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-// You can get the generic HTTP info about the response
-                        Log.d(TAG, "Response code: " + response.code());
+                        Log.d(TAG, "code: " + response.code());
                         if (response.body() == null) {
-                            Log.e(TAG, "No routes found, make sure you set the right user and access token.");
+                            Log.e(TAG, "A route was not found please try agian or the access token is wrong!!");
                             return;
                         } else if (response.body().routes().size() < 1) {
                             Log.e(TAG, "No routes found");
                             return;
                         }
-
                         currentRoute = response.body().routes().get(0);
-
-// Draw the route on the map
-
-                        if (navigationMapRoute != null) {
-                            navigationMapRoute.removeRoute();
+                        if (navigationRoute != null) {
+                            navigationRoute.removeRoute();
                         } else {
-                            navigationMapRoute = new NavigationMapRoute(null, mapView, MainMapboxMap, R.style.NavigationMapRoute);
+                            navigationRoute = new NavigationMapRoute(null, mapView, MainMapboxMap, R.style.NavigationMapRoute);
                         }
-
-                        navigationMapRoute.addRoute(currentRoute);
+                        navigationRoute.addRoute(currentRoute);
                     }
-
                     @Override
                     public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
-                        Log.e(TAG, "Error: " + throwable.getMessage());
+                        Log.e(TAG, "System Failure Error: " + throwable.getMessage());
                     }
                 });
     }
-    private void addDestinationIconSymbolLayer(@NonNull Style loadedMapStyle) {
-
+    private void addMarker(@NonNull Style loadedMapStyle) {
         loadedMapStyle.addImage("destination-icon-id", BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default));
         GeoJsonSource geoJsonSource = new GeoJsonSource("destination-source-id");
         loadedMapStyle.addSource(geoJsonSource);
@@ -198,43 +166,28 @@ public class HomeFragment extends Fragment implements PermissionsListener{
         destinationSymbolLayer.withProperties( iconImage("destination-icon-id"), iconAllowOverlap(true), iconIgnorePlacement(true));
         loadedMapStyle.addLayer(destinationSymbolLayer);
     }
-    private void initSearchFab() {
-        fab_location_search.setOnClickListener(new View.OnClickListener() {
+    private void searchBar() {
+        searchBarB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new PlaceAutocomplete.IntentBuilder().accessToken(Mapbox.getAccessToken()).placeOptions(PlaceOptions.builder().build(PlaceOptions.MODE_CARDS)).build(getActivity());startActivityForResult(intent, completeAdress);
-
+                //this moves camera to address entered
+                Intent intent = new PlaceAutocomplete.IntentBuilder().accessToken(Mapbox.getAccessToken()).placeOptions(PlaceOptions.builder().build(PlaceOptions.MODE_CARDS)).build(getActivity());startActivityForResult(intent, requestCode);
             }
         });
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK && requestCode == completeAdress) {
-
-// Retrieve selected location's CarmenFeature
+        if (resultCode == Activity.RESULT_OK && requestCode == requestCode) {
             CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
             BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default);
-// Create a new FeatureCollection and add a new Feature to it using selectedCarmenFeature above.
-// Then retrieve and update the source designated for showing a selected location's symbol layer icon
-
             if (MainMapboxMap != null) {
                 Style style = MainMapboxMap.getStyle();
-// Move map camera to the selected location
-                MainMapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
-                        new CameraPosition.Builder()
-                                .target(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
-                                        ((Point) selectedCarmenFeature.geometry()).longitude()))
-                                .zoom(16.0)
-                                .build()), 4000);
-
+                MainMapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(), ((Point) selectedCarmenFeature.geometry()).longitude())).zoom(20.0).build()), 5000);
+                Toast.makeText(getActivity(), "Tap location to set Marker and then click start navigation!!", Toast.LENGTH_SHORT).show();
             }
-
         }
-
     }
-    
      //   this displays the map
     @Override
     public void onStart() {
@@ -271,18 +224,11 @@ public class HomeFragment extends Fragment implements PermissionsListener{
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
-
-
-
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
-     //   Toast.makeText(this, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show();
     }
 
-
-
-
-//gets user promissions
+    ///this will get location permissions from the user
     @Override
     public void onPermissionResult(boolean granted) {
     }
@@ -291,21 +237,16 @@ public class HomeFragment extends Fragment implements PermissionsListener{
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-
-
     @SuppressWarnings( {"MissingPermission"})
-    private void enableLocationComponent(@NonNull Style loadedMapStyle) {
+    private void locationEnable(@NonNull Style loadedMapStyle) {
         if(PermissionsManager.areLocationPermissionsGranted(getContext()))
         {
             LocationComponent locationComponent = MainMapboxMap.getLocationComponent();
-            locationComponent.activateLocationComponent(
-                    LocationComponentActivationOptions.builder(this.getContext(), loadedMapStyle).build());
+            locationComponent.activateLocationComponent(LocationComponentActivationOptions.builder(this.getContext(), loadedMapStyle).build());
             locationComponent.setLocationComponentEnabled(true);
             locationComponent.setCameraMode(CameraMode.TRACKING);
             locationComponent.setRenderMode(RenderMode.GPS);
-
         }else{
-
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(getActivity());
         }

@@ -25,7 +25,6 @@ import java.util.HashMap;
  * A simple {@link Fragment} subclass.
  */
 public class PreferencesFragment extends Fragment {
-
     Button SubmitB;
     String transportType;
     String metricSystem;
@@ -35,28 +34,20 @@ public class PreferencesFragment extends Fragment {
     public PreferencesFragment() {
         // Required empty public constructor
     }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         users u = new users();
         final View view = inflater.inflate(R.layout.fragment_preferences, container, false);
-
         SubmitB = view.findViewById(R.id.SubmitB);
         SubmitB.setVisibility(View.GONE);
-
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("USERS").child(u.getID());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
                 transportType = dataSnapshot.child("transportType").getValue().toString();
                 metricSystem = dataSnapshot.child("metricSystem").getValue().toString();
-
-
                 if (metricSystem.equals("Kilometers")) {
                     metricSystemData = new String[]{metricSystem, "Miles"};
 
@@ -66,7 +57,6 @@ public class PreferencesFragment extends Fragment {
                 }
                 final Spinner metricSystemDataS = (Spinner) view.findViewById(R.id.metricSystemS);
                 ArrayAdapter<String> metricSystemAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, metricSystemData);
-
                 metricSystemDataS.setAdapter(metricSystemAdapter);
                 metricSystemAdapter.notifyDataSetChanged();
                 metricSystemDataS.setSelection(0,false);
@@ -74,12 +64,6 @@ public class PreferencesFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         SubmitB.setVisibility(View.VISIBLE);
-
-                        if (Stop == true) {
-                            SubmitB.setVisibility(View.GONE);
-                            System.out.println("dont show the bbutton plz");
-                        }
-                        System.out.println("metric spinner");
                     }
 
                     @Override
@@ -87,7 +71,6 @@ public class PreferencesFragment extends Fragment {
 
                     }
                 });
-
                 if (transportType.equals("car")) {
                     transportTypeData = new String[]{transportType, "bus", "train", "bike"};
                 } else if (transportType.equals("bus")) {
@@ -97,7 +80,6 @@ public class PreferencesFragment extends Fragment {
                 } else if (transportType.equals("bike")) {
                     transportTypeData = new String[]{transportType, "car", "bus", "train"};
                 }
-
                 final Spinner TransportTypeS = (Spinner) view.findViewById(R.id.transportTypeS);
                 ArrayAdapter<String> TransportTypeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, transportTypeData);
 
@@ -108,10 +90,12 @@ public class PreferencesFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         SubmitB.setVisibility(View.VISIBLE);
-                        Stop = true;
-                        System.out.println("trans spinner");
+                        if(Stop == true)
+                        {
+                            SubmitB.setVisibility(View.GONE);
+                            Stop = false;
+                        }
                     }
-
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {
 
@@ -120,33 +104,23 @@ public class PreferencesFragment extends Fragment {
                 SubmitB.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        Stop = true;
-                        System.out.println("hello");
                         String TransportType = TransportTypeS.getSelectedItem().toString();
                         String MetricSystem = metricSystemDataS.getSelectedItem().toString();
-                        System.out.println("transport type = "+ TransportType + " metric " + metricSystem);
                         users user = new users();
                         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("USERS").child(user.getID());
                         HashMap usermap = new HashMap(); // if you have data in diff data types go for HashMap<String,Object> or you can continue with HashMap<String,String>
                         usermap.put("metricSystem",MetricSystem);
                         usermap.put("transportType", TransportType);
                         databaseReference.updateChildren(usermap);
-                        System.out.println("hellosss" + user.getID());
-
-
+                        Stop = true;
                     }
                 });
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-
         });
-
         return view;
     }
-
 }

@@ -32,7 +32,6 @@ public class ProfileFragment extends Fragment {
     Button submitB;
     boolean Stop = false;
     int testing = 0;
-
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -83,7 +82,6 @@ public class ProfileFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 //used to prevent Button from being activated and only once data is changed
@@ -91,7 +89,6 @@ public class ProfileFragment extends Fragment {
                     submitB.setVisibility(View.VISIBLE);
                 }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
 
@@ -110,7 +107,6 @@ public class ProfileFragment extends Fragment {
                     submitB.setVisibility(View.VISIBLE);
                 }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
 
@@ -122,14 +118,12 @@ public class ProfileFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (testing == 1) {
                     submitB.setVisibility(View.VISIBLE);
                 }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
 
@@ -141,7 +135,6 @@ public class ProfileFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (testing == 1) {
@@ -175,5 +168,4 @@ public class ProfileFragment extends Fragment {
         });
         return view;
     }
-
 }

@@ -47,7 +47,6 @@ public class LoginFragment extends Fragment {
         password = view.findViewById(R.id.PasswordTXTB);
         //Register button listener which loads the Register Fragment
         registerB.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
 
@@ -58,8 +57,6 @@ public class LoginFragment extends Fragment {
                         .addToBackStack(null)
                         .commit();
             }
-
-
         });
         //Login button listener
         loginB.setOnClickListener(new View.OnClickListener() {
@@ -80,7 +77,6 @@ public class LoginFragment extends Fragment {
                 myRef.orderByChild("username").equalTo(UserName).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-
                         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
                             users user = new users();
                             user.setID(childDataSnapshot.getKey());
@@ -88,11 +84,12 @@ public class LoginFragment extends Fragment {
                             passwordDatabase = childDataSnapshot.child("password").getValue().toString();
                         }
                         if (UserName.equals(usernameDatabase) && passwordDatabase.equals(Password)) {
+                            Toast.makeText(getActivity(), "Successful Login!!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Swipe from the left of the screen to the right to open menu!!", Toast.LENGTH_LONG).show();
                             FragmentManager fragmentManager = getFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             Navigation_DrawerFragment navigation_drawerFragment = new Navigation_DrawerFragment();
                             fragmentTransaction.replace(R.id.fragment_container, navigation_drawerFragment)
-                                    .addToBackStack(null)
                                     .commit();
                             FragmentManager fragmentManagers = getFragmentManager();
                             FragmentTransaction fragmentTransactions = fragmentManagers.beginTransaction();
@@ -118,3 +115,4 @@ public class LoginFragment extends Fragment {
         return view;
     }
 }
+

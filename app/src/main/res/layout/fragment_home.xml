@@ -15,7 +15,7 @@ tools:context=".HomeFragment">
         tools:layout_editor_absoluteY="0dp" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_location_searchB"
+        android:id="@+id/searchBarB"
         android:layout_width="57dp"
         android:layout_height="52dp"
         android:layout_margin="16dp"
@@ -27,10 +27,10 @@ tools:context=".HomeFragment">
         android:src="@drawable/ic_search_black_24dp"
         mapbox:layout_constraintBottom_toBottomOf="@+id/mapViews"
         mapbox:layout_constraintEnd_toEndOf="parent"
-        mapbox:layout_constraintHorizontal_bias="0.836"
+        mapbox:layout_constraintHorizontal_bias="0.938"
         mapbox:layout_constraintStart_toStartOf="parent"
         mapbox:layout_constraintTop_toTopOf="parent"
-        mapbox:layout_constraintVertical_bias="0.034" />
+        mapbox:layout_constraintVertical_bias="0.028" />
 
     <Button
         android:id="@+id/startB"
@@ -47,6 +47,6 @@ tools:context=".HomeFragment">
         mapbox:layout_constraintHorizontal_bias="0.487"
         mapbox:layout_constraintStart_toStartOf="parent"
         mapbox:layout_constraintTop_toTopOf="@+id/mapViews"
-        mapbox:layout_constraintVertical_bias="0.819" />
+        mapbox:layout_constraintVertical_bias="0.975" />
 
 </android.support.constraint.ConstraintLayout>

@@ -21,11 +21,10 @@ import android.view.ViewGroup;
  * A simple {@link Fragment} subclass.
  */
 public class Navigation_DrawerFragment extends Fragment {
-    //constructors
+    //Variable declarations
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-
     public Navigation_DrawerFragment() {
 
         // Required empty public constructor
@@ -39,12 +38,10 @@ public class Navigation_DrawerFragment extends Fragment {
         //create toolbar listener
         toolbar = view.findViewById(R.id.toolBar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-
         //creates an action bar to which a button is added to open drawer
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,11 +49,8 @@ public class Navigation_DrawerFragment extends Fragment {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-
         drawerLayout = view.findViewById(R.id.drawer_layout);
-
         navigationView = view.findViewById(R.id.navigationView);
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -103,7 +97,6 @@ public class Navigation_DrawerFragment extends Fragment {
                                 .commit();
                         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                         drawerLayout.closeDrawers();
-
                         return true;
                 }
                 return false;

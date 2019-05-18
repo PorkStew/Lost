@@ -72,7 +72,6 @@ public class RegisterFragment extends Fragment {
         String[] metricSystemData = {"none","Kilometers", "Miles"};
         final Spinner metricSystemDataS = (Spinner) view.findViewById(R.id.metricSystemS);
         ArrayAdapter<String> metricSystemAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, metricSystemData);
-
         metricSystemDataS.setAdapter(metricSystemAdapter);
         metricSystemAdapter.notifyDataSetChanged();
         metricSystemDataS.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -96,7 +95,6 @@ public class RegisterFragment extends Fragment {
         final EditText confirmPassword = view.findViewById(R.id.ConfirmPasswordTXTB);
         //submit button listener which gets text from each TextView and puts it into a String
         submitB.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 String FirstName = firstName.getText().toString();
@@ -140,7 +138,5 @@ public class RegisterFragment extends Fragment {
             }
         });
         return view;
-
     }
-
 }
