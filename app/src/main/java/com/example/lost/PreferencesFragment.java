@@ -56,7 +56,7 @@ public class PreferencesFragment extends Fragment {
 
                 }
                 final Spinner metricSystemDataS = (Spinner) view.findViewById(R.id.metricSystemS);
-                ArrayAdapter<String> metricSystemAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, metricSystemData);
+                ArrayAdapter<String> metricSystemAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item_layout, metricSystemData);
                 metricSystemDataS.setAdapter(metricSystemAdapter);
                 metricSystemAdapter.notifyDataSetChanged();
                 metricSystemDataS.setSelection(0,false);
@@ -81,7 +81,7 @@ public class PreferencesFragment extends Fragment {
                     transportTypeData = new String[]{transportType, "car", "bus", "train"};
                 }
                 final Spinner TransportTypeS = (Spinner) view.findViewById(R.id.transportTypeS);
-                ArrayAdapter<String> TransportTypeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, transportTypeData);
+                ArrayAdapter<String> TransportTypeAdapter = new ArrayAdapter<String>(getActivity(),R.layout.spinner_item_layout, transportTypeData);
 
                 TransportTypeS.setAdapter(TransportTypeAdapter);
                 TransportTypeAdapter.notifyDataSetChanged();

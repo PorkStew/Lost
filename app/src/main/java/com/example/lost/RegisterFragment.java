@@ -37,7 +37,7 @@ public class RegisterFragment extends Fragment {
         //creates data for fueltype spinner and creates a listener for the spinner
         String[] data = {"none", "unleaded 93", "unleaded 95", "diesel"};
         final Spinner FuelTypeS = (Spinner) view.findViewById(R.id.FuelTypeS);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, data);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item_layout, data);
         FuelTypeS.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         FuelTypeS.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -54,7 +54,7 @@ public class RegisterFragment extends Fragment {
         //creates data for transport type spinner and creates a listener for the spinner
         String[] TransPortTypeData = {"none","car", "bus", "train", "bike"};
         final Spinner TransportTypeS = (Spinner) view.findViewById(R.id.TransportTypeS);
-        ArrayAdapter<String> TransportTypeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, TransPortTypeData);
+        ArrayAdapter<String> TransportTypeAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item_layout, TransPortTypeData);
         TransportTypeS.setAdapter(TransportTypeAdapter);
         TransportTypeAdapter.notifyDataSetChanged();
         TransportTypeS.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -71,7 +71,7 @@ public class RegisterFragment extends Fragment {
         //creates data for metric system spinner and creates a listener for the spinner
         String[] metricSystemData = {"none","Kilometers", "Miles"};
         final Spinner metricSystemDataS = (Spinner) view.findViewById(R.id.metricSystemS);
-        ArrayAdapter<String> metricSystemAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, metricSystemData);
+        ArrayAdapter<String> metricSystemAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item_layout, metricSystemData);
         metricSystemDataS.setAdapter(metricSystemAdapter);
         metricSystemAdapter.notifyDataSetChanged();
         metricSystemDataS.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
