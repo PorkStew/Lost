@@ -138,11 +138,14 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (testing == 1) {
+                    System.out.println("in if testing eamil");
                     submitB.setVisibility(View.VISIBLE);
                 } else {
+                    System.out.println("in else email");
                     testing = testing + 1;
                 }
                 if (Stop == true) {
+                    System.out.println("in if stop");
                     submitB.setVisibility(View.GONE);
                 }
             }
